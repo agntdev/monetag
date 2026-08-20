@@ -1,0 +1,20 @@
+[
+  {
+    "name": "/post",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Start creating a new task with guided prompts"
+            }
+          }
+        ],
+        "send": {
+          "text": "/post"
+        }
+      }
+    ]
+  }
+]
