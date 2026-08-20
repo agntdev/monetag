@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "The task board isn't set up yet. Try again later."
+              "text": "Earn Daily isn't set up yet. Try again later."
             }
           }
         ],

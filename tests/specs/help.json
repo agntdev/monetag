@@ -8,7 +8,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Browse available work, post a task, or check your accepted tasks.\n\nUse the buttons in the main menu to get started."
+              "text": "Earn Daily helps you browse paid work, post tasks, and track accepted work.\n\nUse the main-menu buttons to get started."
             }
           }
         ]

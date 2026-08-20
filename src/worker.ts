@@ -14,6 +14,7 @@ import { webhookCallback, Composer, type Bot } from "grammy";
 import { buildBot, type Ctx } from "./bot.js";
 import { handlers } from "./handlers.generated.js";
 import { createDurableSessionStorage, type WorkerEnv } from "./toolkit/session/durable.js";
+import { syncImportedAds } from "./ad-sync.js";
 
 export { ChatDO } from "./toolkit/session/durable.js";
 
@@ -80,5 +81,9 @@ export default {
     }
 
     return new Response("not found", { status: 404 });
+  },
+  /** Configure a Worker cron (hourly by default); the configured interval is also enforced in syncImportedAds. */
+  async scheduled(_event: unknown, env: WorkerEnv, executionCtx: { waitUntil(promise: Promise<unknown>): void }): Promise<void> {
+    executionCtx.waitUntil(syncImportedAds({ env }));
   },
 };

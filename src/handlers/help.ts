@@ -8,7 +8,7 @@ import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
 // main menu (`menu:help`). Enhance the copy for your specific bot; keep it short.
 const composer = new Composer<Ctx>();
 
-const HELP = "Browse available work, post a task, or check your accepted tasks.\n\nUse the buttons in the main menu to get started.";
+const HELP = "Earn Daily helps you browse paid work, post tasks, and track accepted work.\n\nUse the main-menu buttons to get started.";
 
 const backToMenu = inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]);
 
