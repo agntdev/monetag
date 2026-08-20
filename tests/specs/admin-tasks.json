@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Admin view of active tasks for management"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],

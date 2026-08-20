@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Browse available tasks with pagination"
+              "text": "The task board isn't set up yet. Try again later."
             }
           }
         ],

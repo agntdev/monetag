@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View full details of an ad from the ads list"
+              "text": "Choose an ad from the list first."
             }
           }
         ],

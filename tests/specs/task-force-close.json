@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Admin action to force-close a task"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],

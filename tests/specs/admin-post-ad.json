@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Admin command to post a new ad with image and text"
+              "text": "Owner access isn't set up yet."
             }
           }
         ],

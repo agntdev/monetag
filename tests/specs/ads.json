@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View all active admin-posted ads"
+              "text": "The task board isn't set up yet. Try again later."
             }
           }
         ],

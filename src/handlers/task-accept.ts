@@ -1,17 +1,15 @@
 import { Composer } from "grammy";
-
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-// Menu: wire this into /start via registerMainMenuItem({ label: "Accept Task", data: "task:accept" }) if the toolkit exposes it.
-
-const composer = new Composer();
-
-composer.callbackQuery("task:accept", async (ctx) => {
-  await ctx.answerCallbackQuery();
-  await ctx.reply("Accept a task and create an acceptance record");
+import type { Ctx } from "../bot.js";
+import { acceptTask } from "../data.js";
+import { adminChatId } from "../toolkit/index.js";
+const composer = new Composer<Ctx>();
+composer.callbackQuery(/^task:accept:(.+)$/, async (ctx) => { await ctx.answerCallbackQuery(); if (!ctx.from) { await ctx.reply("Open this task from your Telegram account to accept it."); return; } const result = await acceptTask(ctx, ctx.match[1], ctx.from.id);
+  if (result.unavailable) { await ctx.editMessageText("The task board isn't set up yet. Try again later."); return; }
+  if (!result.accepted || !result.task) { await ctx.editMessageText("This task has already been taken or closed."); return; }
+  await ctx.editMessageText("You accepted this task. The poster has been notified.");
+  const notification = `Your task “${result.task.title}” has been accepted.`;
+  try { await ctx.api.sendMessage(result.task.posterUserId, notification); } catch { /* Posters may have blocked the bot; acceptance remains valid. */ }
+  const admin = adminChatId(ctx as never); if (admin) { try { await ctx.api.sendMessage(admin, `A task was accepted: ${result.task.title}.`); } catch { /* Admin notification is best effort. */ } }
 });
-
+composer.callbackQuery("task:accept", async (ctx) => { await ctx.answerCallbackQuery(); await ctx.reply("Choose a task from the list first."); });
 export default composer;

@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Accept a task and create an acceptance record"
+              "text": "Choose a task from the list first."
             }
           }
         ],
