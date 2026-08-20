@@ -1,0 +1,20 @@
+[
+  {
+    "name": "View Task",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "View full details of a task from the browse list"
+            }
+          }
+        ],
+        "send": {
+          "callback": "task:view"
+        }
+      }
+    ]
+  }
+]
