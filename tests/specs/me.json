@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View your user profile and acceptance history"
+              "text": "The task board isn't set up yet. Try again later."
             }
           }
         ],

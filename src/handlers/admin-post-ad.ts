@@ -1,15 +1,18 @@
 import { Composer } from "grammy";
-
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-
-const composer = new Composer();
-
-composer.command("admin_post_ad", async (ctx) => {
-  await ctx.reply("Admin command to post a new ad with image and text");
+import type { Ctx } from "../bot.js";
+import { createAd } from "../data.js";
+import { adminChatId, confirmKeyboard, inlineButton, inlineKeyboard, registerMainMenuItem, requireOwner } from "../toolkit/index.js";
+import { flow } from "../task-ui.js";
+registerMainMenuItem({ label: "Post an ad", data: "ad:post", order: 50 });
+const composer = new Composer<Ctx>();
+const prompt = (ctx: Ctx, text: string, placeholder: string) => ctx.reply(text, { reply_markup: { force_reply: true, input_field_placeholder: placeholder } });
+async function begin(ctx: Ctx) { if (!(await requireOwner(ctx as never))) return; flow(ctx).draft = { kind: "ad" }; flow(ctx).step = "ad:text"; await prompt(ctx, "Write the ad text.", "Type the advertisement"); }
+composer.command("admin_post_ad", begin); composer.callbackQuery("ad:post", async (ctx) => { await ctx.answerCallbackQuery(); await begin(ctx); });
+composer.on("message:text", async (ctx, next) => { const state = flow(ctx); if (!state.step?.startsWith("ad:")) return next(); const draft = state.draft; if (!draft || draft.kind !== "ad") { state.step = undefined; return next(); } const value = ctx.message.text.trim();
+  if (state.step === "ad:text") { if (!value || value.length > 1000) { await ctx.reply("Use between 1 and 1,000 characters."); return; } draft.text = value; state.step = "ad:image"; await ctx.reply("Send an optional image, or tap Skip.", { reply_markup: inlineKeyboard([[inlineButton("Skip", "ad:image:skip")]]) }); return; }
+  if (state.step === "ad:link") { if (value !== "Skip" && !/^https:\/\/\S+$/i.test(value)) { await ctx.reply("Use a full https link, or type Skip."); return; } draft.linkUrl = value === "Skip" ? undefined : value; state.step = "ad:confirm"; await ctx.reply("Review the ad before publishing.", { reply_markup: confirmKeyboard("ad:create", { yes: "Publish ad", no: "Cancel" }) }); }
 });
-
+composer.on("message:photo", async (ctx, next) => { const state = flow(ctx); const draft = state.draft; if (state.step !== "ad:image" || !draft || draft.kind !== "ad") return next(); draft.imageUrl = ctx.message.photo.at(-1)?.file_id; state.step = "ad:link"; await prompt(ctx, "Add an optional https link, or type Skip.", "https://example.com or Skip"); });
+composer.callbackQuery("ad:image:skip", async (ctx) => { await ctx.answerCallbackQuery(); const state = flow(ctx); if (state.step !== "ad:image" || state.draft?.kind !== "ad") { await ctx.reply("That draft has expired. Start a new ad."); return; } state.step = "ad:link"; await ctx.editMessageText("Add an optional https link, or type Skip."); });
+composer.callbackQuery(/^ad:create:(yes|no)$/, async (ctx) => { await ctx.answerCallbackQuery(); if (!(await requireOwner(ctx as never))) return; const state = flow(ctx); const draft = state.draft; if (ctx.match[1] === "no") { state.draft = undefined; state.step = undefined; await ctx.editMessageText("Ad draft cancelled."); return; } if (!draft || draft.kind !== "ad" || !draft.text || !ctx.from) { await ctx.editMessageText("That draft has expired. Start a new ad."); return; } const ad = await createAd(ctx, { text: draft.text, imageUrl: draft.imageUrl, linkUrl: draft.linkUrl, adminUserId: ctx.from.id }); state.draft = undefined; state.step = undefined; await ctx.editMessageText(ad ? "Your ad is now active." : "The task board isn't set up yet. Try again later."); const owner = adminChatId(ctx as never); if (ad && owner) { try { await ctx.api.sendMessage(owner, "A new ad is now active."); } catch { /* A blocked or unavailable notification must not undo the ad. */ } } });
 export default composer;

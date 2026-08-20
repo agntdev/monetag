@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "View full details of a task from the browse list"
+              "text": "Choose a task from the list first."
             }
           }
         ],

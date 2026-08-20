@@ -1,15 +1,9 @@
 import { Composer } from "grammy";
-
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
-
-const composer = new Composer();
-
-composer.command("ads", async (ctx) => {
-  await ctx.reply("View all active admin-posted ads");
-});
-
+import type { Ctx } from "../bot.js";
+import { registerMainMenuItem } from "../toolkit/index.js";
+import { showAds } from "../task-ui.js";
+registerMainMenuItem({ label: "View ads", data: "ads:page:0", order: 30 });
+const composer = new Composer<Ctx>();
+composer.command("ads", (ctx) => showAds(ctx));
+composer.callbackQuery(/^ads:(?:page|next|prev):(\d+)$/, async (ctx) => { await ctx.answerCallbackQuery(); await showAds(ctx, Number(ctx.match[1]), true); });
 export default composer;

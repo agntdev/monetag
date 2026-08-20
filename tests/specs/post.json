@@ -7,7 +7,7 @@
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Start creating a new task with guided prompts"
+              "text": "What is the task title?"
             }
           }
         ],
