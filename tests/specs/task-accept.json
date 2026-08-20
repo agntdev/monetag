@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Accept Task",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Accept a task and create an acceptance record"
+            }
+          }
+        ],
+        "send": {
+          "callback": "task:accept"
+        }
+      }
+    ]
+  }
+]
